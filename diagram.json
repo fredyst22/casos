@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "author": "Carlos Fredy Fernandez Camayo",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": { "mac": "12:34:00:00:00:01" }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": -265.37,
+      "left": 112,
+      "attrs": { "i2c_address": "0x27" }
+    },
+    { "type": "wokwi-dht22", "id": "dht", "top": -297.3, "left": 33, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 50, "left": -200, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton-6mm",
+      "id": "btnUp",
+      "top": 150,
+      "left": -200,
+      "attrs": { "color": "green", "label": "+" }
+    },
+    {
+      "type": "wokwi-pushbutton-6mm",
+      "id": "btnDown",
+      "top": 150,
+      "left": -100,
+      "attrs": { "color": "red", "label": "-" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledGreen",
+      "top": 100,
+      "left": 150,
+      "attrs": { "color": "green" }
+    },
+    { "type": "wokwi-led", "id": "ledRed", "top": 100, "left": 200, "attrs": { "color": "red" } },
+    { "type": "wokwi-relay-module", "id": "relay", "top": 200, "left": 150, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo", "top": 300, "left": 150, "attrs": {} },
+    { "type": "wokwi-ds1307", "id": "rtc", "top": -101.4, "left": 230.5, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:21", "lcd:SDA", "green", [ "v0" ] ],
+    [ "esp:22", "lcd:SCL", "blue", [ "v0" ] ],
+    [ "esp:5V", "lcd:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "lcd:GND", "black", [ "v0" ] ],
+    [ "esp:21", "rtc:SDA", "green", [ "v0" ] ],
+    [ "esp:22", "rtc:SCL", "blue", [ "v0" ] ],
+    [ "esp:5V", "rtc:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "rtc:GND", "black", [ "v0" ] ],
+    [ "esp:4", "dht:SDA", "orange", [ "v0" ] ],
+    [ "esp:5V", "dht:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "dht:GND", "black", [ "v0" ] ],
+    [ "esp:34", "ldr:AO", "purple", [ "v0" ] ],
+    [ "esp:5V", "ldr:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "ldr:GND", "black", [ "v0" ] ],
+    [ "esp:12", "btnUp:1.l", "green", [ "v0" ] ],
+    [ "esp:GND.1", "btnUp:2.l", "black", [ "v0" ] ],
+    [ "esp:14", "btnDown:1.l", "red", [ "v0" ] ],
+    [ "esp:GND.1", "btnDown:2.l", "black", [ "v0" ] ],
+    [ "esp:25", "ledGreen:A", "green", [ "v0" ] ],
+    [ "esp:GND.1", "ledGreen:C", "black", [ "v0" ] ],
+    [ "esp:26", "ledRed:A", "red", [ "v0" ] ],
+    [ "esp:GND.1", "ledRed:C", "black", [ "v0" ] ],
+    [ "esp:27", "relay:IN", "yellow", [ "v0" ] ],
+    [ "esp:5V", "relay:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "relay:GND", "black", [ "v0" ] ],
+    [ "esp:13", "servo:PWM", "orange", [ "v0" ] ],
+    [ "esp:5V", "servo:V+", "red", [ "v0" ] ],
+    [ "esp:GND.1", "servo:GND", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
