@@ -1,3 +1,10 @@
+/**
+ * @file HarvestPodDevice.h
+ * @brief Main HarvestPod Advance device class based on ModestIoT Device.
+ * @author Carlos Fredy Fernandez Camayo
+ * @student u202320083
+ */
+
 #ifndef HARVEST_POD_DEVICE_H
 #define HARVEST_POD_DEVICE_H
 
@@ -7,61 +14,80 @@
 #include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
 #include "CustomSensors.h"
+#include "CustomActuators.h"
 #include "HarvestTelemetry.h"
+#include "HarvestConstants.h"
 
-// Clase concreta para solucionar el error de abstracción del WiFiDriver
+/**
+ * @class AppWiFiDriver
+ * @brief Concrete WiFiConnectivityDriver required by ModestIoT networking APIs.
+ */
 class AppWiFiDriver : public WiFiConnectivityDriver {
 public:
-    AppWiFiDriver(const char* ssid, const char* password) : WiFiConnectivityDriver(ssid, password) {}
-    bool transmit(const char* target, const char* data) override {
-        return true; // Satisface el requisito de la nueva librería
-    }
+  AppWiFiDriver(const char* ssid, const char* password)
+      : WiFiConnectivityDriver(ssid, password) {}
+
+  /**
+   * @brief Satisfies the abstract transmit contract for the simulator runtime.
+   * @return Always true in this embedded prototype.
+   */
+  bool transmit(const char* target, const char* data) override {
+    (void)target;
+    (void)data;
+    return true;
+  }
 };
 
 /**
- * @file HarvestPodDevice.h
- * @brief Main application logic, handles rules, modes, and network.
+ * @class HarvestPodDevice
+ * @brief Embedded application that orchestrates sensors, actuators, modes and telemetry.
  */
 class HarvestPodDevice : public Device {
 private:
-    PodDhtSensor dhtSensor; // Usamos el nombre corregido
-    LightSensor lightSensor;
-    ButtonSensor btnUp;
-    ButtonSensor btnDown;
-    ServoMotor ventilationServo;
-    
-    AppWiFiDriver wifiDriver; // Usamos nuestro driver corregido
-    HttpGatewayClient gatewayClient; // Nombre actualizado según la nueva librería
-    LiquidCrystal_I2C lcd;
-    RTC_DS1307 rtc;
+  PodDhtSensor dhtSensor;
+  LightSensor lightSensor;
+  ButtonSensor buttonIncrease;
+  ButtonSensor buttonDecrease;
+  ServoMotor ventilationServo;
+  LedActuator greenLed;
+  LedActuator redLed;
+  RelayActuator irrigationRelay;
+  AppWiFiDriver wifiDriver;
+  LiquidCrystal_I2C lcd;
+  RTC_DS1307 rtc;
 
-    int targetHumidity;
-    unsigned long previousTelemetryMillis;
-    unsigned long telemetryIntervalMillis;
-    unsigned long previousUiMillis;
-    unsigned long uiIntervalMillis;
-    
-    String operationMode;
-    String irrigationState;
-    String macAddress;
+  int targetHumidity;
+  unsigned long previousTelemetryMillis;
+  unsigned long previousUiMillis;
+  String operationMode;
+  String irrigationState;
+  String macAddress;
 
-    static const int PIN_LED_GREEN = 25;
-    static const int PIN_LED_RED = 26;
-    static const int PIN_RELAY = 27;
-
-    void connectToNetwork();
-    void sendTelemetry();
-    void processRules();
-    void updateLCD();
-    void setLeds(bool green, bool red);
-    String getTimestamp();
+  void connectToNetwork();
+  void publishTelemetry();
+  void processDayModeRules(float temperature, float humidity);
+  void enterNightMode();
+  void updateLcdDisplay(float temperature, float humidity);
+  void setLedState(bool greenOn, bool redOn);
+  void setVentilationOpen(bool isOpen);
+  void adjustTargetHumidity(int delta);
+  String getTimestamp();
 
 public:
-    HarvestPodDevice();
-    void setup();
-    void update();
-    void on(Event event) override;
-    void handle(Command command) override;
+  /** @brief Constructs the device and wires all hardware collaborators. */
+  HarvestPodDevice();
+
+  /** @brief Initializes serial banner, peripherals, network and initial state. */
+  void setup();
+
+  /** @brief Executes UI sampling, rule evaluation and periodic telemetry. */
+  void update();
+
+  /** @brief Receives ModestIoT events raised by owned sensors. */
+  void on(Event event) override;
+
+  /** @brief Receives ModestIoT commands routed to this device. */
+  void handle(Command command) override;
 };
 
 #endif
